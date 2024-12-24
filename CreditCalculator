@@ -5,13 +5,20 @@ public class Main {
     public static void main(String[] args) {
         Scanner scanner = new Scanner(System.in);
         ArrayList<String> subjects = new ArrayList<>();
+        ArrayList<Integer> credits = new ArrayList<>();
         System.out.println("=== 학점 계산기 ===");
         while (true) {
             System.out.print("과목명을 입력하세요 (종료: exit): ");
             String subject = scanner.nextLine();
             if (subject.equalsIgnoreCase("exit")) break;
             subjects.add(subject);
+
+            System.out.print("학점을 입력하세요: ");
+            int credit = scanner.nextInt();
+            credits.add(credit);
+            scanner.nextLine(); // 버퍼 비우기
         }
         System.out.println("입력된 과목: " + subjects);
+        System.out.println("입력된 학점: " + credits);
     }
 }
