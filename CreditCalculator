@@ -11,19 +11,23 @@ public class GPA_Calculator extends JFrame {
     private JTextField subjectField, creditField, gradeField;
     private JTextArea resultArea;
     private JComboBox<String> semesterComboBox;
-
     private final ArrayList<Integer> credits = new ArrayList<>();
     private final ArrayList<Double> grades = new ArrayList<>();
-    private final ArrayList<Double> semesterGrades = new ArrayList<>();
     private double calculatedGrade = 0.0;
 
     public GPA_Calculator() {
         // 창 설정
         setTitle("간단 학점 계산기");
-        setSize(600, 600); // 창 높이를 늘림
+        setSize(600, 600); // 창 가로 크기 600으로 늘림
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setLayout(new BorderLayout());
         setLocationRelativeTo(null); // 화면 중앙에 위치
+
+        // 메뉴바 추가
+        JMenuBar menuBar = new JMenuBar();
+        JMenu menu = new JMenu("메뉴");
+        menuBar.add(menu);
+        setJMenuBar(menuBar);
 
         // 전체 패널 설정
         JPanel mainPanel = new JPanel() {
@@ -88,18 +92,16 @@ public class GPA_Calculator extends JFrame {
         JButton calculateButton = new JButton("계산");
         JButton saveButton = new JButton("저장");
         JButton clearButton = new JButton("지우기");  // 지우기 버튼 추가
-
         styleButton(addButton);  // 버튼 스타일 설정
         styleButton(calculateButton);  // 버튼 스타일 설정
         styleButton(saveButton);  // 버튼 스타일 설정
         styleButton(clearButton);  // 버튼 스타일 설정
-
         buttonPanel.add(addButton);
         buttonPanel.add(calculateButton);
         buttonPanel.add(saveButton);
         buttonPanel.add(clearButton);  // 지우기 버튼 추가
 
-// 입력 패널과 버튼 패널 추가
+        // 입력 패널과 버튼 패널 추가
         mainPanel.add(inputPanel, BorderLayout.NORTH);
         mainPanel.add(buttonPanel, BorderLayout.CENTER);
 
@@ -112,14 +114,14 @@ public class GPA_Calculator extends JFrame {
         resultArea.setBorder(BorderFactory.createTitledBorder("결과"));
         JScrollPane resultScrollPane = new JScrollPane(resultArea);
         resultScrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
-        resultScrollPane.setPreferredSize(new Dimension(400, 300)); // 결과 영역 높이 설정
+        resultScrollPane.setPreferredSize(new Dimension(600, 300)); // 결과 영역 높이 설정
 
         // 결과 영역을 빈 공간에 추가
         mainPanel.add(resultScrollPane, BorderLayout.SOUTH);
 
         // 버튼 기능 추가
         addButton.addActionListener(e -> addEntry());
-        calculateButton.addActionListener(e -> calculateGrade());
+        calculateButton.addActionListener(e -> calculateGPA());
         saveButton.addActionListener(e -> saveResults());
         clearButton.addActionListener(e -> clearResults());  // 지우기 버튼 기능 추가
 
@@ -133,9 +135,7 @@ public class GPA_Calculator extends JFrame {
         button.setFocusPainted(false);
         button.setBorder(BorderFactory.createLineBorder(Color.GRAY, 2)); // 기본 테두리
         button.setFont(new Font("Noto Sans", Font.BOLD, 14)); // 한글 지원이 좋은 폰트 사용
-        button.setPreferredSize(new Dimension(100, 40));
-
-        // 라운드 테두리 적용
+        button.setPreferredSize(new Dimension(80, 35));  // 버튼 크기 조정
         Border roundedBorder = BorderFactory.createCompoundBorder(
                 BorderFactory.createLineBorder(Color.GRAY, 2),
                 BorderFactory.createEmptyBorder(5, 5, 5, 5)
@@ -144,6 +144,43 @@ public class GPA_Calculator extends JFrame {
         button.setContentAreaFilled(true); // 버튼 배경을 채움
         button.setOpaque(true); // 버튼을 불투명하게 설정
         button.setCursor(new Cursor(Cursor.HAND_CURSOR)); // 마우스 커서 변경
+    }
+
+    // 학점 변환
+    private double convertGradeToPoint(String grade) {
+        switch (grade) {
+            case "A":
+                return 4.0;
+            case "B":
+                return 3.0;
+            case "C":
+                return 2.0;
+            case "D":
+                return 1.0;
+            case "F":
+                return 0.0;
+            default:
+                return -1.0;
+        }
+    }
+
+    // GPA 계산
+    private void calculateGPA() {
+        if (credits.isEmpty() || grades.isEmpty()) {
+            showError("입력된 과목이 없습니다.");
+            return;
+        }
+
+        double totalCredits = 0;
+        double totalGradePoints = 0;
+
+        for (int i = 0; i < credits.size(); i++) {
+            totalCredits += credits.get(i);
+            totalGradePoints += credits.get(i) * grades.get(i);
+        }
+
+        double gpa = totalGradePoints / totalCredits;
+        resultArea.append("전체 평균 학점: " + String.format("%.2f", gpa) + "\n");
     }
 
     private void addEntry() {
@@ -167,45 +204,8 @@ public class GPA_Calculator extends JFrame {
         }
     }
 
-    private void calculateGrade() {
-        if (credits.isEmpty()) {
-            showError("입력된 데이터가 없습니다.");
-            return;
-        }
-
-        double totalPoints = 0;
-        int totalCredits = 0;
-
-        for (int i = 0; i < credits.size(); i++) {
-            totalPoints += credits.get(i) * grades.get(i);
-            totalCredits += credits.get(i);
-        }
-
-        calculatedGrade = totalCredits > 0 ? totalPoints / totalCredits : 0.0;
-        resultArea.append(String.format("\n평균 학점: %.2f\n", calculatedGrade));
-
-        // 학기별 학점 계산
-        double semesterGrade = totalCredits > 0 ? totalPoints / totalCredits : 0.0;
-        String currentSemester = (String) semesterComboBox.getSelectedItem();
-        semesterGrades.add(semesterGrade);
-        resultArea.append(String.format("%s의 학점: %.2f\n", currentSemester, semesterGrade));
-    }
-
-    private double convertGradeToPoint(String grade) {
-        switch (grade) {
-            case "A":
-                return 4.0;
-            case "B":
-                return 3.0;
-            case "C":
-                return 2.0;
-            case "D":
-                return 1.0;
-            case "F":
-                return 0.0;
-            default:
-                return -1.0;
-        }
+    private void showError(String message) {
+        JOptionPane.showMessageDialog(this, message, "오류", JOptionPane.ERROR_MESSAGE);
     }
 
     private void clearFields() {
@@ -214,30 +214,22 @@ public class GPA_Calculator extends JFrame {
         gradeField.setText("");
     }
 
-    private void clearResults() {
-        resultArea.setText("");  // 결과 창 내용 지우기
-
-    }    private void showError(String message) {
-        JOptionPane.showMessageDialog(this, message, "오류", JOptionPane.ERROR_MESSAGE);
-    }
-
     private void saveResults() {
         try (FileWriter writer = new FileWriter("gpa_results.txt", true)) {
-            writer.write("입력한 과목 및 성적:\n");
-            for (int i = 0; i < credits.size(); i++) {
-                writer.write(String.format("학기: %s, 과목: %s, 학점: %d, 성적: %.1f\n",
-                        semesterComboBox.getSelectedItem(), subjectField.getText().trim(), credits.get(i), grades.get(i)));
-            }
-            writer.write(String.format("평균 학점: %.2f\n", calculatedGrade));
-            writer.write("-----------------------------------\n");
-            JOptionPane.showMessageDialog(this, "결과가 gpa_results.txt에 저장되었습니다.", "저장 완료", JOptionPane.INFORMATION_MESSAGE);
+            writer.write(resultArea.getText());
+            JOptionPane.showMessageDialog(this, "결과가 저장되었습니다.");
         } catch (IOException e) {
-            showError("파일 저장 중 오류가 발생했습니다: " + e.getMessage());
+            showError("결과 저장 실패!");
         }
     }
 
+    private void clearResults() {
+        credits.clear();
+        grades.clear();
+        resultArea.setText("");
+    }
+
     public static void main(String[] args) {
-        // 프로그램 실행
         SwingUtilities.invokeLater(GPA_Calculator::new);
     }
 }
