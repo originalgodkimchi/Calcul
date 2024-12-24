@@ -23,5 +23,5 @@
 2. GPA_Calculator.java 파일을 IDE(예: IntelliJ IDEA, Eclipse 등)에서 열고 실행합니다.
 3.프로그램이 실행되면, GUI를 통해 학기, 과목명, 학점, 성적을 입력하고 GPA를 계산할 수 있습니다.
 
-**## 사용 예시**
+## 사용 예시
 
