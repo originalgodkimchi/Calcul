@@ -15,15 +15,23 @@ public class GPA_Calculator extends JFrame {
 
     public GPA_Calculator() {
         // 창 설정
-        setTitle("학점 계산기");
+        setTitle("간단 학점 계산기");
         setSize(400, 500);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setLayout(new BorderLayout());
         setLocationRelativeTo(null); // 화면 중앙에 위치
 
         // 전체 패널 설정
-        JPanel mainPanel = new JPanel();
-        mainPanel.setBackground(new Color(240, 240, 240)); // 배경색
+        JPanel mainPanel = new JPanel() {
+            @Override
+            protected void paintComponent(Graphics g) {
+                // 그라데이션 효과 적용
+                Graphics2D g2d = (Graphics2D) g;
+                GradientPaint gp = new GradientPaint(0, 0, new Color(255, 204, 229), 0, getHeight(), new Color(204, 229, 255));
+                g2d.setPaint(gp);
+                g2d.fillRect(0, 0, getWidth(), getHeight());
+            }
+        };
         mainPanel.setLayout(new BorderLayout());
 
         // 입력 패널 생성
@@ -79,7 +87,7 @@ public class GPA_Calculator extends JFrame {
         resultArea.setEditable(false);
         resultArea.setLineWrap(true);
         resultArea.setWrapStyleWord(true);
-        resultArea.setBackground(new Color(230, 230, 250)); // 결과 영역 배경색
+        resultArea.setBackground(new Color(240, 240, 255)); // 결과 영역 배경색
         resultArea.setBorder(BorderFactory.createTitledBorder("결과"));
         add(new JScrollPane(resultArea), BorderLayout.SOUTH);
 
@@ -92,20 +100,22 @@ public class GPA_Calculator extends JFrame {
     }
 
     private void styleButton(JButton button) {
-        button.setBackground(new Color(70, 130, 180)); // 버튼 배경색
+        button.setBackground(new Color(100, 149, 237)); // 버튼 배경색
         button.setForeground(Color.WHITE); // 버튼 글자색
         button.setFocusPainted(false);
-        button.setBorder(BorderFactory.createLineBorder(Color.GRAY, 1)); // 기본 테두리
-        button.setFont(new Font("Arial", Font.BOLD, 14));
+        button.setBorder(BorderFactory.createLineBorder(Color.GRAY, 2)); // 기본 테두리
+        button.setFont(new Font("Noto Sans", Font.BOLD, 14)); // 한글 지원이 좋은 폰트 사용
         button.setPreferredSize(new Dimension(100, 40));
 
         // 라운드 테두리 적용
         Border roundedBorder = BorderFactory.createCompoundBorder(
-                BorderFactory.createLineBorder(Color.GRAY, 1),
+                BorderFactory.createLineBorder(Color.GRAY, 2),
                 BorderFactory.createEmptyBorder(5, 5, 5, 5)
         );
         button.setBorder(roundedBorder);
-        button.setContentAreaFilled(false); // 버튼 배경 투명하게 설정
+        button.setContentAreaFilled(true); // 버튼 배경을 채움
+        button.setOpaque(true); // 버튼을 불투명하게 설정
+        button.setCursor(new Cursor(Cursor.HAND_CURSOR)); // 마우스 커서 변경
     }
 
     private void addEntry() {
