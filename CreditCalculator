@@ -20,7 +20,7 @@ public class GPA_Calculator extends JFrame {
     public GPA_Calculator() {
         // 창 설정
         setTitle("간단 학점 계산기");
-        setSize(400, 600); // 창 높이를 늘림
+        setSize(600, 600); // 창 높이를 늘림
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setLayout(new BorderLayout());
         setLocationRelativeTo(null); // 화면 중앙에 위치
@@ -87,14 +87,19 @@ public class GPA_Calculator extends JFrame {
         JButton addButton = new JButton("추가");
         JButton calculateButton = new JButton("계산");
         JButton saveButton = new JButton("저장");
-        styleButton(addButton);
-        styleButton(calculateButton);
-        styleButton(saveButton);
+        JButton clearButton = new JButton("지우기");  // 지우기 버튼 추가
+
+        styleButton(addButton);  // 버튼 스타일 설정
+        styleButton(calculateButton);  // 버튼 스타일 설정
+        styleButton(saveButton);  // 버튼 스타일 설정
+        styleButton(clearButton);  // 버튼 스타일 설정
+
         buttonPanel.add(addButton);
         buttonPanel.add(calculateButton);
         buttonPanel.add(saveButton);
+        buttonPanel.add(clearButton);  // 지우기 버튼 추가
 
-        // 입력 패널과 버튼 패널 추가
+// 입력 패널과 버튼 패널 추가
         mainPanel.add(inputPanel, BorderLayout.NORTH);
         mainPanel.add(buttonPanel, BorderLayout.CENTER);
 
@@ -116,6 +121,7 @@ public class GPA_Calculator extends JFrame {
         addButton.addActionListener(e -> addEntry());
         calculateButton.addActionListener(e -> calculateGrade());
         saveButton.addActionListener(e -> saveResults());
+        clearButton.addActionListener(e -> clearResults());  // 지우기 버튼 기능 추가
 
         add(mainPanel, BorderLayout.CENTER);
         setVisible(true);
@@ -208,7 +214,10 @@ public class GPA_Calculator extends JFrame {
         gradeField.setText("");
     }
 
-    private void showError(String message) {
+    private void clearResults() {
+        resultArea.setText("");  // 결과 창 내용 지우기
+
+    }    private void showError(String message) {
         JOptionPane.showMessageDialog(this, message, "오류", JOptionPane.ERROR_MESSAGE);
     }
 
