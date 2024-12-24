@@ -22,13 +22,7 @@ public class GPA_Calculator extends JFrame {
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setLayout(new BorderLayout());
         setLocationRelativeTo(null); // 화면 중앙에 위치
-
-        // 메뉴바 추가
-        JMenuBar menuBar = new JMenuBar();
-        JMenu menu = new JMenu("메뉴");
-        menuBar.add(menu);
-        setJMenuBar(menuBar);
-
+        
         // 전체 패널 설정
         JPanel mainPanel = new JPanel() {
             @Override
@@ -80,7 +74,7 @@ public class GPA_Calculator extends JFrame {
         // 성적
         gbc.gridx = 0;
         gbc.gridy = 3;
-        inputPanel.add(new JLabel("성적 (A/B/C/D/F):"), gbc);
+        inputPanel.add(new JLabel("성적"), gbc);
         gradeField = new JTextField(15);
         gbc.gridx = 1;
         inputPanel.add(gradeField, gbc);
@@ -95,7 +89,7 @@ public class GPA_Calculator extends JFrame {
         styleButton(addButton);  // 버튼 스타일 설정
         styleButton(calculateButton);  // 버튼 스타일 설정
         styleButton(saveButton);  // 버튼 스타일 설정
-        styleButton(clearButton);  // 버튼 스타일 설정
+        styleButton(clearButton);  // 지우기 버튼 스타일 설정
         buttonPanel.add(addButton);
         buttonPanel.add(calculateButton);
         buttonPanel.add(saveButton);
@@ -149,10 +143,16 @@ public class GPA_Calculator extends JFrame {
     // 학점 변환
     private double convertGradeToPoint(String grade) {
         switch (grade) {
+            case "A+":
+                return 4.5;
             case "A":
                 return 4.0;
+            case "B+":
+                return 3.5;
             case "B":
                 return 3.0;
+            case "C+":
+                return 2.5;
             case "C":
                 return 2.0;
             case "D":
@@ -189,7 +189,7 @@ public class GPA_Calculator extends JFrame {
             double grade = convertGradeToPoint(gradeField.getText().trim().toUpperCase());
 
             if (grade < 0) {
-                showError("유효하지 않은 성적입니다. A, B, C, D, F만 입력하세요.");
+                showError("유효하지 않은 성적입니다. A+, A, B+, B, C+, C, D, F만 입력하세요.");
                 return;
             }
 
