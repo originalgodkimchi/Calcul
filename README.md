@@ -25,7 +25,7 @@
 GPA 계산 후, 결과는 화면에 출력되며, 저장 버튼을 클릭하여 gpa_results.txt 파일에 저장할 수 있습니다.
 
 ## 기본 화면
-![리드미2](https://github.com/user-attachments/assets/ed10cf19-8ef7-42e3-abbc-77dfc6153889)
+![image](https://github.com/user-attachments/assets/531eef77-c4b4-4a68-a811-46f07eb3f851)
  - 학기 선택을 할 수 있는 기능은 사용자로부터 성적을 입력 받고 나서 txt 파일로 변환이 될 때 어느 학기에 어떤 성적이였는지를 알 수 있게 학기를 구분 하였다.
 ## 실행 화면
 
