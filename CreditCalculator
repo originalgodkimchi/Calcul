@@ -1,9 +1,16 @@
+package dd;
+
 import java.util.ArrayList;
 import java.util.Scanner;
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.io.FileNotFoundException;
 
 public class GPA_Calculator {
 
     public static void main(String[] args) {
+        // 기본 데이터 구조
         Scanner scanner = new Scanner(System.in);
         ArrayList<String> subjects = new ArrayList<>();
         ArrayList<Integer> credits = new ArrayList<>();
@@ -11,6 +18,7 @@ public class GPA_Calculator {
 
         System.out.println("=== 학점 계산기 ===");
 
+        // 사용자 입력 받기
         while (true) {
             System.out.print("과목명을 입력하세요 (종료: exit): ");
             String subject = scanner.nextLine();
@@ -23,13 +31,34 @@ public class GPA_Calculator {
 
             System.out.print("성적(A/B/C/D/F)을 입력하세요: ");
             String grade = scanner.next();
-            grades.add(convertGradeToPoint(grade));
+            double gradePoint = convertGradeToPoint(grade);
+            grades.add(gradePoint);
             scanner.nextLine(); // 버퍼 비우기
         }
 
-        System.out.println("입력이 완료되었습니다.");
+        // GPA 계산
+        double gpa = calculateGPA(credits, grades);
+        System.out.printf("평균 GPA: %.2f\n", gpa);
+
+        // 데이터 저장
+        saveToFile("gpa_data.txt", subjects, credits, grades);
+        System.out.println("데이터가 저장되었습니다.");
+
+        // 파일 데이터 로드
+        loadFromFile("gpa_data.txt", subjects, credits, grades);
+        System.out.println("저장된 데이터를 불러왔습니다.");
+
+        // GPA 통계
+        double maxGPA = findMaxGPA(grades);
+        double minGPA = findMinGPA(grades);
+        double avgGPA = calculateAverageGPA(grades);
+
+        System.out.printf("최고 GPA: %.2f\n", maxGPA);
+        System.out.printf("최저 GPA: %.2f\n", minGPA);
+        System.out.printf("평균 GPA: %.2f\n", avgGPA);
     }
 
+    // 성적을 GPA 점수로 변환
     public static double convertGradeToPoint(String grade) {
         switch (grade.toUpperCase()) {
             case "A": return 4.0;
@@ -37,9 +66,75 @@ public class GPA_Calculator {
             case "C": return 2.0;
             case "D": return 1.0;
             case "F": return 0.0;
-            default: 
+            default:
                 System.out.println("잘못된 성적 입력입니다.");
                 return -1.0;
         }
+    }
+
+    // GPA 계산
+    public static double calculateGPA(ArrayList<Integer> credits, ArrayList<Double> grades) {
+        double totalPoints = 0;
+        int totalCredits = 0;
+
+        for (int i = 0; i < credits.size(); i++) {
+            totalPoints += credits.get(i) * grades.get(i);
+            totalCredits += credits.get(i);
+        }
+
+        return totalCredits > 0 ? totalPoints / totalCredits : 0.0;
+    }
+
+    // 데이터 파일로 저장
+    public static void saveToFile(String filename, ArrayList<String> subjects, ArrayList<Integer> credits, ArrayList<Double> grades) {
+        try (FileWriter writer = new FileWriter(new File(filename))) {
+            for (int i = 0; i < subjects.size(); i++) {
+                writer.write(subjects.get(i) + "," + credits.get(i) + "," + grades.get(i) + "\n");
+            }
+        } catch (IOException e) {
+            System.out.println("파일 저장에 실패했습니다.");
+        }
+    }
+
+    // 파일에서 데이터 불러오기
+    public static void loadFromFile(String filename, ArrayList<String> subjects, ArrayList<Integer> credits, ArrayList<Double> grades) {
+        try {
+            File file = new File(filename);
+            Scanner fileScanner = new Scanner(file);
+            while (fileScanner.hasNextLine()) {
+                String line = fileScanner.nextLine();
+                String[] data = line.split(",");
+                subjects.add(data[0]);
+                credits.add(Integer.parseInt(data[1]));
+                grades.add(Double.parseDouble(data[2]));
+            }
+        } catch (FileNotFoundException e) {
+            System.out.println("파일을 찾을 수 없습니다.");
+        }
+    }
+
+    // GPA 통계 분석
+    public static double findMaxGPA(ArrayList<Double> grades) {
+        double maxGPA = grades.get(0);
+        for (double grade : grades) {
+            if (grade > maxGPA) maxGPA = grade;
+        }
+        return maxGPA;
+    }
+
+    public static double findMinGPA(ArrayList<Double> grades) {
+        double minGPA = grades.get(0);
+        for (double grade : grades) {
+            if (grade < minGPA) minGPA = grade;
+        }
+        return minGPA;
+    }
+
+    public static double calculateAverageGPA(ArrayList<Double> grades) {
+        double total = 0;
+        for (double grade : grades) {
+            total += grade;
+        }
+        return grades.size() > 0 ? total / grades.size() : 0.0;
     }
 }
