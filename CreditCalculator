@@ -3,10 +3,15 @@ package dd;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionListener;
+import java.util.ArrayList;
 
 public class GPA_Calculator extends JFrame {
 
     private JTextField subjectField, creditField, gradeField;
+    private JTextArea resultArea;
+    private ArrayList<String> subjects = new ArrayList<>();
+    private ArrayList<Integer> credits = new ArrayList<>();
+    private ArrayList<Double> grades = new ArrayList<>();
 
     public GPA_Calculator() {
         setTitle("학점 계산기");
@@ -30,8 +35,57 @@ public class GPA_Calculator extends JFrame {
         add(inputPanel, BorderLayout.NORTH);
 
         setVisible(true);
+
+        JPanel buttonPanel = new JPanel();
+        JButton addButton = new JButton("추가");
+        JButton calculateButton = new JButton("계산");
+        buttonPanel.add(addButton);
+        buttonPanel.add(calculateButton);
+        add(buttonPanel, BorderLayout.SOUTH);
+
+        resultArea = new JTextArea();
+        resultArea.setEditable(false);
+        add(new JScrollPane(resultArea), BorderLayout.CENTER);
+        addButton.addActionListener(e -> addEntry());
+    }
+    private void addEntry() {
+        try {
+            String subject = subjectField.getText();
+            int credit = Integer.parseInt(creditField.getText());
+            double grade = convertGradeToPoint(gradeField.getText());
+
+            if (grade < 0) {
+                JOptionPane.showMessageDialog(this, "유효하지 않은 성적입니다!", "오류", JOptionPane.ERROR_MESSAGE);
+                return;
+            }
+
+            subjects.add(subject);
+            credits.add(credit);
+            grades.add(grade);
+
+            resultArea.append(String.format("추가됨: %s - %d학점, 성적: %.1f\n", subject, credit, grade));
+            clearInputFields();
+        } catch (NumberFormatException ex) {
+            JOptionPane.showMessageDialog(this, "학점은 숫자로 입력해야 합니다!", "오류", JOptionPane.ERROR_MESSAGE);
+        }
     }
 
+    private void clearInputFields() {
+        subjectField.setText("");
+        creditField.setText("");
+        gradeField.setText("");
+    }
+
+    private double convertGradeToPoint(String grade) {
+        switch (grade.toUpperCase()) {
+            case "A": return 4.0;
+            case "B": return 3.0;
+            case "C": return 2.0;
+            case "D": return 1.0;
+            case "F": return 0.0;
+            default: return -1.0;
+        }
+    }
     public static void main(String[] args) {
         new GPA_Calculator();
     }
