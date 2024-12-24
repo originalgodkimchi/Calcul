@@ -1,83 +1,153 @@
 package dd;
 
 import javax.swing.*;
+import javax.swing.border.Border;
 import java.awt.*;
-import java.awt.event.ActionListener;
 import java.util.ArrayList;
 
 public class GPA_Calculator extends JFrame {
 
     private JTextField subjectField, creditField, gradeField;
     private JTextArea resultArea;
-    private ArrayList<String> subjects = new ArrayList<>();
-    private ArrayList<Integer> credits = new ArrayList<>();
-    private ArrayList<Double> grades = new ArrayList<>();
+
+    private final ArrayList<Integer> credits = new ArrayList<>();
+    private final ArrayList<Double> grades = new ArrayList<>();
 
     public GPA_Calculator() {
+        // 창 설정
         setTitle("학점 계산기");
-        setSize(400, 400);
+        setSize(400, 500);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setLayout(new BorderLayout());
+        setLocationRelativeTo(null); // 화면 중앙에 위치
 
-        JPanel inputPanel = new JPanel(new GridLayout(3, 2));
-        inputPanel.add(new JLabel("과목명:"));
-        subjectField = new JTextField();
-        inputPanel.add(subjectField);
+        // 전체 패널 설정
+        JPanel mainPanel = new JPanel();
+        mainPanel.setBackground(new Color(240, 240, 240)); // 배경색
+        mainPanel.setLayout(new BorderLayout());
 
-        inputPanel.add(new JLabel("학점:"));
-        creditField = new JTextField();
-        inputPanel.add(creditField);
+        // 입력 패널 생성
+        JPanel inputPanel = new JPanel();
+        inputPanel.setLayout(new GridBagLayout());
+        inputPanel.setBackground(new Color(255, 255, 255)); // 입력 패널 배경색
+        inputPanel.setBorder(BorderFactory.createTitledBorder("정보 입력"));
 
-        inputPanel.add(new JLabel("성적(A/B/C/D/F):"));
-        gradeField = new JTextField();
-        inputPanel.add(gradeField);
+        GridBagConstraints gbc = new GridBagConstraints();
+        gbc.fill = GridBagConstraints.HORIZONTAL;
+        gbc.insets = new Insets(10, 10, 10, 10);
 
-        add(inputPanel, BorderLayout.NORTH);
+        // 과목명
+        gbc.gridx = 0;
+        gbc.gridy = 0;
+        inputPanel.add(new JLabel("과목명:"), gbc);
+        subjectField = new JTextField(15);
+        gbc.gridx = 1;
+        inputPanel.add(subjectField, gbc);
 
-        setVisible(true);
+        // 학점
+        gbc.gridx = 0;
+        gbc.gridy = 1;
+        inputPanel.add(new JLabel("학점:"), gbc);
+        creditField = new JTextField(15);
+        gbc.gridx = 1;
+        inputPanel.add(creditField, gbc);
 
+        // 성적
+        gbc.gridx = 0;
+        gbc.gridy = 2;
+        inputPanel.add(new JLabel("성적 (A/B/C/D/F):"), gbc);
+        gradeField = new JTextField(15);
+        gbc.gridx = 1;
+        inputPanel.add(gradeField, gbc);
+
+        // 버튼 패널
         JPanel buttonPanel = new JPanel();
+        buttonPanel.setBackground(new Color(255, 255, 255)); // 버튼 패널 배경색
         JButton addButton = new JButton("추가");
         JButton calculateButton = new JButton("계산");
+        styleButton(addButton);
+        styleButton(calculateButton);
         buttonPanel.add(addButton);
         buttonPanel.add(calculateButton);
-        add(buttonPanel, BorderLayout.SOUTH);
 
+        // 입력 패널과 버튼 패널 추가
+        mainPanel.add(inputPanel, BorderLayout.NORTH);
+        mainPanel.add(buttonPanel, BorderLayout.CENTER);
+
+        // 결과 영역
         resultArea = new JTextArea();
         resultArea.setEditable(false);
-        add(new JScrollPane(resultArea), BorderLayout.CENTER);
+        resultArea.setLineWrap(true);
+        resultArea.setWrapStyleWord(true);
+        resultArea.setBackground(new Color(230, 230, 250)); // 결과 영역 배경색
+        resultArea.setBorder(BorderFactory.createTitledBorder("결과"));
+        add(new JScrollPane(resultArea), BorderLayout.SOUTH);
+
+        // 버튼 기능 추가
         addButton.addActionListener(e -> addEntry());
+        calculateButton.addActionListener(e -> calculateGPA());
+
+        add(mainPanel, BorderLayout.CENTER);
+        setVisible(true);
     }
+
+    private void styleButton(JButton button) {
+        button.setBackground(new Color(70, 130, 180)); // 버튼 배경색
+        button.setForeground(Color.WHITE); // 버튼 글자색
+        button.setFocusPainted(false);
+        button.setBorder(BorderFactory.createLineBorder(Color.GRAY, 1)); // 기본 테두리
+        button.setFont(new Font("Arial", Font.BOLD, 14));
+        button.setPreferredSize(new Dimension(100, 40));
+
+        // 라운드 테두리 적용
+        Border roundedBorder = BorderFactory.createCompoundBorder(
+                BorderFactory.createLineBorder(Color.GRAY, 1),
+                BorderFactory.createEmptyBorder(5, 5, 5, 5)
+        );
+        button.setBorder(roundedBorder);
+        button.setContentAreaFilled(false); // 버튼 배경 투명하게 설정
+    }
+
     private void addEntry() {
         try {
-            String subject = subjectField.getText();
-            int credit = Integer.parseInt(creditField.getText());
-            double grade = convertGradeToPoint(gradeField.getText());
+            int credit = Integer.parseInt(creditField.getText().trim());
+            double grade = convertGradeToPoint(gradeField.getText().trim().toUpperCase());
 
             if (grade < 0) {
-                JOptionPane.showMessageDialog(this, "유효하지 않은 성적입니다!", "오류", JOptionPane.ERROR_MESSAGE);
+                showError("유효하지 않은 성적입니다. A, B, C, D, F만 입력하세요.");
                 return;
             }
 
-            subjects.add(subject);
             credits.add(credit);
             grades.add(grade);
+            resultArea.append(String.format("학점: %d, 성적: %.1f\n", credit, grade));
 
-            resultArea.append(String.format("추가됨: %s - %d학점, 성적: %.1f\n", subject, credit, grade));
-            clearInputFields();
-        } catch (NumberFormatException ex) {
-            JOptionPane.showMessageDialog(this, "학점은 숫자로 입력해야 합니다!", "오류", JOptionPane.ERROR_MESSAGE);
+            clearFields();
+        } catch (NumberFormatException e) {
+            showError("학점은 숫자로 입력하세요.");
         }
     }
 
-    private void clearInputFields() {
-        subjectField.setText("");
-        creditField.setText("");
-        gradeField.setText("");
+    private void calculateGPA() {
+        if (credits.isEmpty()) {
+            showError("입력된 데이터가 없습니다.");
+            return;
+        }
+
+        double totalPoints = 0;
+        int totalCredits = 0;
+
+        for (int i = 0; i < credits.size(); i++) {
+            totalPoints += credits.get(i) * grades.get(i);
+            totalCredits += credits.get(i);
+        }
+
+        double gpa = totalCredits > 0 ? totalPoints / totalCredits : 0.0;
+        resultArea.append(String.format("\n평균 GPA: %.2f\n", gpa));
     }
 
     private double convertGradeToPoint(String grade) {
-        switch (grade.toUpperCase()) {
+        switch (grade) {
             case "A": return 4.0;
             case "B": return 3.0;
             case "C": return 2.0;
@@ -86,7 +156,18 @@ public class GPA_Calculator extends JFrame {
             default: return -1.0;
         }
     }
+
+    private void clearFields() {
+        subjectField.setText("");
+        creditField.setText("");
+        gradeField.setText("");
+    }
+
+    private void showError(String message) {
+        JOptionPane.showMessageDialog(this, message, "오류", JOptionPane.ERROR_MESSAGE);
+    }
+
     public static void main(String[] args) {
-        new GPA_Calculator();
+        SwingUtilities.invokeLater(GPA_Calculator::new);
     }
 }
