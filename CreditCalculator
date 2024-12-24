@@ -1,23 +1,33 @@
+import java.util.ArrayList;
 import java.util.Scanner;
 
 public class GPA_Calculator {
 
     public static void main(String[] args) {
         Scanner scanner = new Scanner(System.in);
+        ArrayList<String> subjects = new ArrayList<>();
+        ArrayList<Integer> credits = new ArrayList<>();
+        ArrayList<Double> grades = new ArrayList<>();
+
         System.out.println("=== 학점 계산기 ===");
 
-        System.out.print("과목명을 입력하세요: ");
-        String subject = scanner.nextLine();
+        while (true) {
+            System.out.print("과목명을 입력하세요 (종료: exit): ");
+            String subject = scanner.nextLine();
+            if (subject.equalsIgnoreCase("exit")) break;
+            subjects.add(subject);
 
-        System.out.print("학점을 입력하세요: ");
-        int credit = scanner.nextInt();
+            System.out.print("학점을 입력하세요: ");
+            int credit = scanner.nextInt();
+            credits.add(credit);
 
-        System.out.print("성적(A/B/C/D/F)을 입력하세요: ");
-        String grade = scanner.next();
+            System.out.print("성적(A/B/C/D/F)을 입력하세요: ");
+            String grade = scanner.next();
+            grades.add(convertGradeToPoint(grade));
+            scanner.nextLine(); // 버퍼 비우기
+        }
 
-        double gradePoint = convertGradeToPoint(grade);
-
-        System.out.printf("입력한 과목: %s, 학점: %d, 성적: %s, GPA 점수: %.1f\n", subject, credit, grade, gradePoint);
+        System.out.println("입력이 완료되었습니다.");
     }
 
     public static double convertGradeToPoint(String grade) {
@@ -27,7 +37,9 @@ public class GPA_Calculator {
             case "C": return 2.0;
             case "D": return 1.0;
             case "F": return 0.0;
-            default: return -1.0;
+            default: 
+                System.out.println("잘못된 성적 입력입니다.");
+                return -1.0;
         }
     }
 }
