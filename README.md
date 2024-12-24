@@ -24,8 +24,8 @@
 성적 입력: A
 GPA 계산 후, 결과는 화면에 출력되며, 저장 버튼을 클릭하여 gpa_results.txt 파일에 저장할 수 있습니다.
 
-## 예시 화면
-![리드미](https://github.com/user-attachments/assets/970a32fa-b628-4b6f-a56c-3afeff29c698)
+## 기본 화면
+![리드미2](https://github.com/user-attachments/assets/ed10cf19-8ef7-42e3-abbc-77dfc6153889)
 
 
 
