@@ -8,8 +8,8 @@ import java.io.IOException;
 import java.util.ArrayList;
 
 /**
- * GPA 계산기를 제공하는 클래스입니다. 사용자가 입력한 과목명, 학점, 성적을 바탕으로
- * GPA를 계산하고 결과를 출력하며, 계산된 결과를 파일에 저장할 수 있습니다.
+ * GPA_Calculator는 학점을 입력받아 GPA를 계산하고 저장 및 관리하는 GUI 애플리케이션입니다.
+ * 이 클래스는 Java Swing을 사용하여 GUI를 구성하며, 학점과 성적 데이터를 입력, 계산, 저장, 초기화할 수 있는 기능을 제공합니다.
  */
 public class GPA_Calculator extends JFrame {
     private JTextField subjectField, creditField, gradeField;
@@ -20,10 +20,10 @@ public class GPA_Calculator extends JFrame {
     private double calculatedGrade = 0.0;
 
     /**
-     * GPA_Calculator 생성자. JFrame을 설정하고 UI 구성 요소를 초기화합니다.
+     * GPA_Calculator 생성자.
+     * 애플리케이션 창을 초기화하고 GUI 컴포넌트를 설정합니다.
      */
     public GPA_Calculator() {
-        // 창 설정
         setTitle("간단 학점 계산기");
         setSize(600, 600); // 창 가로 크기 600으로 늘림
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -40,7 +40,6 @@ public class GPA_Calculator extends JFrame {
         JPanel mainPanel = new JPanel() {
             @Override
             protected void paintComponent(Graphics g) {
-                // 그라데이션 효과 적용
                 Graphics2D g2d = (Graphics2D) g;
                 GradientPaint gp = new GradientPaint(0, 0, new Color(255, 204, 229), 0, getHeight(), new Color(204, 229, 255));
                 g2d.setPaint(gp);
@@ -49,17 +48,17 @@ public class GPA_Calculator extends JFrame {
         };
         mainPanel.setLayout(new BorderLayout());
 
-        // 입력 패널 생성
+        // 입력 패널 설정
         JPanel inputPanel = new JPanel();
         inputPanel.setLayout(new GridBagLayout());
-        inputPanel.setBackground(new Color(255, 255, 255)); // 입력 패널 배경색
+        inputPanel.setBackground(new Color(255, 255, 255));
         inputPanel.setBorder(BorderFactory.createTitledBorder("정보 입력"));
 
         GridBagConstraints gbc = new GridBagConstraints();
         gbc.fill = GridBagConstraints.HORIZONTAL;
         gbc.insets = new Insets(10, 10, 10, 10);
 
-        // 학기 선택
+        // 학기 선택 및 입력 필드 구성
         gbc.gridx = 0;
         gbc.gridy = 0;
         inputPanel.add(new JLabel("학기 선택:"), gbc);
@@ -68,7 +67,6 @@ public class GPA_Calculator extends JFrame {
         gbc.gridx = 1;
         inputPanel.add(semesterComboBox, gbc);
 
-        // 과목명
         gbc.gridx = 0;
         gbc.gridy = 1;
         inputPanel.add(new JLabel("과목명:"), gbc);
@@ -76,7 +74,6 @@ public class GPA_Calculator extends JFrame {
         gbc.gridx = 1;
         inputPanel.add(subjectField, gbc);
 
-        // 학점
         gbc.gridx = 0;
         gbc.gridy = 2;
         inputPanel.add(new JLabel("학점:"), gbc);
@@ -84,92 +81,92 @@ public class GPA_Calculator extends JFrame {
         gbc.gridx = 1;
         inputPanel.add(creditField, gbc);
 
-        // 성적
         gbc.gridx = 0;
         gbc.gridy = 3;
-        inputPanel.add(new JLabel("성적 (A/B/C/D/F):"), gbc);
+        inputPanel.add(new JLabel("성적 (A+/A/B+/B/C+/C/D/F):"), gbc);
         gradeField = new JTextField(15);
         gbc.gridx = 1;
         inputPanel.add(gradeField, gbc);
 
-        // 버튼 패널
         JPanel buttonPanel = new JPanel();
-        buttonPanel.setBackground(new Color(255, 255, 255)); // 버튼 패널 배경색
+        buttonPanel.setBackground(new Color(255, 255, 255));
         JButton addButton = new JButton("추가");
         JButton calculateButton = new JButton("계산");
         JButton saveButton = new JButton("저장");
-        JButton clearButton = new JButton("지우기");  // 지우기 버튼 추가
-        styleButton(addButton);  // 버튼 스타일 설정
-        styleButton(calculateButton);  // 버튼 스타일 설정
-        styleButton(saveButton);  // 버튼 스타일 설정
-        styleButton(clearButton);  // 버튼 스타일 설정
+        JButton clearButton = new JButton("지우기");
+        styleButton(addButton);
+        styleButton(calculateButton);
+        styleButton(saveButton);
+        styleButton(clearButton);
         buttonPanel.add(addButton);
         buttonPanel.add(calculateButton);
         buttonPanel.add(saveButton);
-        buttonPanel.add(clearButton);  // 지우기 버튼 추가
+        buttonPanel.add(clearButton);
 
-        // 입력 패널과 버튼 패널 추가
         mainPanel.add(inputPanel, BorderLayout.NORTH);
         mainPanel.add(buttonPanel, BorderLayout.CENTER);
 
-        // 결과 영역
         resultArea = new JTextArea();
         resultArea.setEditable(false);
         resultArea.setLineWrap(true);
         resultArea.setWrapStyleWord(true);
-        resultArea.setBackground(new Color(240, 240, 255)); // 결과 영역 배경색
+        resultArea.setBackground(new Color(240, 240, 255));
         resultArea.setBorder(BorderFactory.createTitledBorder("결과"));
         JScrollPane resultScrollPane = new JScrollPane(resultArea);
         resultScrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
-        resultScrollPane.setPreferredSize(new Dimension(600, 300)); // 결과 영역 높이 설정
+        resultScrollPane.setPreferredSize(new Dimension(600, 300));
 
-        // 결과 영역을 빈 공간에 추가
         mainPanel.add(resultScrollPane, BorderLayout.SOUTH);
 
-        // 버튼 기능 추가
         addButton.addActionListener(e -> addEntry());
         calculateButton.addActionListener(e -> calculateGPA());
         saveButton.addActionListener(e -> saveResults());
-        clearButton.addActionListener(e -> clearResults());  // 지우기 버튼 기능 추가
+        clearButton.addActionListener(e -> clearResults());
 
         add(mainPanel, BorderLayout.CENTER);
         setVisible(true);
     }
 
     /**
-     * 버튼의 스타일을 설정합니다. 버튼의 배경색, 글자색, 테두리 등을 설정합니다.
+     * 버튼의 스타일을 설정합니다.
      *
-     * @param button 스타일을 설정할 버튼
+     * @param button 스타일을 적용할 버튼
      */
     private void styleButton(JButton button) {
-        button.setBackground(new Color(100, 149, 237)); // 버튼 배경색
-        button.setForeground(Color.WHITE); // 버튼 글자색
+        button.setBackground(new Color(100, 149, 237));
+        button.setForeground(Color.WHITE);
         button.setFocusPainted(false);
-        button.setBorder(BorderFactory.createLineBorder(Color.GRAY, 2)); // 기본 테두리
-        button.setFont(new Font("Noto Sans", Font.BOLD, 14)); // 한글 지원이 좋은 폰트 사용
-        button.setPreferredSize(new Dimension(80, 35));  // 버튼 크기 조정
+        button.setBorder(BorderFactory.createLineBorder(Color.GRAY, 2));
+        button.setFont(new Font("Noto Sans", Font.BOLD, 14));
+        button.setPreferredSize(new Dimension(80, 35));
         Border roundedBorder = BorderFactory.createCompoundBorder(
                 BorderFactory.createLineBorder(Color.GRAY, 2),
                 BorderFactory.createEmptyBorder(5, 5, 5, 5)
         );
         button.setBorder(roundedBorder);
-        button.setContentAreaFilled(true); // 버튼 배경을 채움
-        button.setOpaque(true); // 버튼을 불투명하게 설정
-        button.setCursor(new Cursor(Cursor.HAND_CURSOR)); // 마우스 커서 변경
+        button.setContentAreaFilled(true);
+        button.setOpaque(true);
+        button.setCursor(new Cursor(Cursor.HAND_CURSOR));
     }
 
     /**
-     * 성적을 점수로 변환합니다. A는 4.0, B는 3.0, C는 2.0, D는 1.0, F는 0.0입니다.
+     * 성적을 GPA 점수로 변환합니다.
      *
-     * @param grade 성적 (A, B, C, D, F 중 하나)
-     * @return 변환된 점수
+     * @param grade 입력된 성적
+     * @return 변환된 GPA 점수
      */
     private double convertGradeToPoint(String grade) {
         switch (grade) {
+            case "A+":
+                return 4.5;
             case "A":
                 return 4.0;
+            case "B+":
+                return 3.5;
             case "B":
                 return 3.0;
+            case "C+":
+                return 2.5;
             case "C":
                 return 2.0;
             case "D":
@@ -182,7 +179,7 @@ public class GPA_Calculator extends JFrame {
     }
 
     /**
-     * GPA를 계산합니다. 사용자가 입력한 과목들의 학점과 성적을 바탕으로 GPA를 계산합니다.
+     * GPA를 계산하여 결과 영역에 표시합니다.
      */
     private void calculateGPA() {
         if (credits.isEmpty() || grades.isEmpty()) {
@@ -203,7 +200,7 @@ public class GPA_Calculator extends JFrame {
     }
 
     /**
-     * 입력된 과목명, 학점, 성적 정보를 리스트에 추가합니다.
+     * 입력된 과목 데이터를 추가합니다.
      */
     private void addEntry() {
         try {
@@ -211,7 +208,7 @@ public class GPA_Calculator extends JFrame {
             double grade = convertGradeToPoint(gradeField.getText().trim().toUpperCase());
 
             if (grade < 0) {
-                showError("유효하지 않은 성적입니다. A, B, C, D, F만 입력하세요.");
+                showError("유효하지 않은 성적입니다. A+, A, B+, B, C+, C, D, F만 입력하세요.");
                 return;
             }
 
@@ -227,9 +224,9 @@ public class GPA_Calculator extends JFrame {
     }
 
     /**
-     * 오류 메시지를 팝업으로 표시합니다.
+     * 오류 메시지를 표시합니다.
      *
-     * @param message 오류 메시지
+     * @param message 오류 메시지 내용
      */
     private void showError(String message) {
         JOptionPane.showMessageDialog(this, message, "오류", JOptionPane.ERROR_MESSAGE);
@@ -245,7 +242,7 @@ public class GPA_Calculator extends JFrame {
     }
 
     /**
-     * 계산된 결과를 텍스트 파일에 저장합니다.
+     * 결과를 파일로 저장합니다.
      */
     private void saveResults() {
         try (FileWriter writer = new FileWriter("gpa_results.txt", true)) {
@@ -257,7 +254,7 @@ public class GPA_Calculator extends JFrame {
     }
 
     /**
-     * 결과를 초기화합니다.
+     * 결과 및 입력 데이터를 초기화합니다.
      */
     private void clearResults() {
         credits.clear();
@@ -266,9 +263,9 @@ public class GPA_Calculator extends JFrame {
     }
 
     /**
-     * 애플리케이션을 실행합니다.
+     * 애플리케이션의 메인 메서드입니다.
      *
-     * @param args 실행 시 인수
+     * @param args 명령줄 인수
      */
     public static void main(String[] args) {
         SwingUtilities.invokeLater(GPA_Calculator::new);
